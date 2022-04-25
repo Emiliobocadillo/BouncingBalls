@@ -13,15 +13,31 @@ import javafx.util.Duration;
 
 public class BouncyBallsWindow extends Application {
 
+    private enum UserAction{
+        NONE, GO_UP, GO_DOWN
+    }
+
+    private UserAction action = UserAction.NONE;
+
+    // takes care of animating the game
+    private Timeline timeline = new Timeline();
+    // Whether the game is running or not
+    private boolean running = true;
+
+
     private static final int APP_WIDTH = 800;
     private static final int APP_HEIGHT = 600;
+    private static final int BAT_W = 20;
+    private static final int BAT_H = 100;
 
-    private BouncyBall ball1 = new BouncyBall(20, Color.RED, true, true);
-    private BouncyBall ball2 = new BouncyBall(20, Color.GREEN, false, true);
+    private BouncyBall ball1 = new BouncyBall(20, Color.RED, true, true, 6);
+    private BouncyBall ball2 = new BouncyBall(20, Color.BLUE, false, true, 6);
     private Rectangle sealing = new Rectangle();
     private Rectangle floor = new Rectangle();
     private Rectangle left = new Rectangle();
     private Rectangle right = new Rectangle();
+    private Rectangle player1 = new Rectangle(BAT_W, BAT_H);
+    private Rectangle player2 = new Rectangle(BAT_W, BAT_H);
 
 
 
@@ -41,32 +57,33 @@ public class BouncyBallsWindow extends Application {
 
                 System.out.println("Thread 1 Working");
                 // if the left boolean is true then add -5 to the x coordinate of the ball, else add 5
-                ball1.setTranslateX(ball1.getTranslateX() + (ball1.goesLeft ? -5 : 5));
+                ball1.setTranslateX(ball1.getTranslateX() + (ball1.goesLeft ? -ball1.speed : ball1.speed));
                 // if the up boolean is true then add -5 to the y coordinate of the ball, else add 5
-                ball1.setTranslateY(ball1.getTranslateY() + (ball1.goesUp ? -5 : 5));
+                ball1.setTranslateY(ball1.getTranslateY() + (ball1.goesUp ? -ball1.speed : ball1.speed));
+
 
                 // collision with sealing
-                if (ball1.getBoundsInParent().intersects(sealing.getBoundsInParent())){
+                if (BouncyBall.checkCollision(ball1,sealing)){
                     ball1.goesUp = false;
                 }
 
                 // collision with floor
-                if (ball1.getBoundsInParent().intersects(floor.getBoundsInParent())){
+                if (BouncyBall.checkCollision(ball1,floor)){
                     ball1.goesUp = true;
                 }
 
                 // collision with left
-                if (ball1.getBoundsInParent().intersects(left.getBoundsInParent())){
+                if (BouncyBall.checkCollision(ball1, left)){
                     ball1.goesLeft = false;
                 }
 
-                // collision with left
-                if (ball1.getBoundsInParent().intersects(right.getBoundsInParent())){
+                // collision with right
+                if (BouncyBall.checkCollision(ball1, right)){
                     ball1.goesLeft = true;
                 }
 
                 // Ball on ball collision
-                if (ball1.getBoundsInParent().intersects(ball2.getBoundsInParent())){
+                if (BouncyBall.checkCollision(ball1,ball2)){
                     ball1.setFill(BouncyBall.changeColor());
                     ball2.setFill(BouncyBall.changeColor());
 
@@ -77,6 +94,11 @@ public class BouncyBallsWindow extends Application {
                     ball2.goesUp = !ball2.goesUp;
                     System.out.println("BALLS TOUCHED EACH OTHER");
                 }
+
+
+                //
+
+
             }
 
         }
@@ -96,46 +118,97 @@ public class BouncyBallsWindow extends Application {
 
                 System.out.println("Thread 2 Working");
                 // if the left boolean is true then add -5 to the x coordinate of the ball, else add 5
-                ball2.setTranslateX(ball2.getTranslateX() + (ball2.goesLeft ? -5 : 5));
+                ball2.setTranslateX(ball2.getTranslateX() + (ball2.goesLeft ? -ball2.speed : ball2.speed));
                 // if the up boolean is true then add -5 to the y coordinate of the ball, else add 5
-                ball2.setTranslateY(ball2.getTranslateY() + (ball2.goesUp ? -5 : 5));
+                ball2.setTranslateY(ball2.getTranslateY() + (ball2.goesUp ? -ball2.speed : ball2.speed));
 
 
                 // collision with sealing
-                if (ball2.getBoundsInParent().intersects(sealing.getBoundsInParent())){
+                if (BouncyBall.checkCollision(ball2,sealing)){
                     ball2.goesUp = false;
                 }
 
                 // collision with floor
-                if (ball2.getBoundsInParent().intersects(floor.getBoundsInParent())){
+                if (BouncyBall.checkCollision(ball2,floor)){
                     ball2.goesUp = true;
                 }
 
                 // collision with left
-                if (ball2.getBoundsInParent().intersects(left.getBoundsInParent())){
+                if (BouncyBall.checkCollision(ball2, left)){
                     ball2.goesLeft = false;
                 }
 
-                // collision with left
-                if (ball2.getBoundsInParent().intersects(right.getBoundsInParent())){
+                // collision with right
+                if (BouncyBall.checkCollision(ball2, right)){
                     ball2.goesLeft = true;
                 }
             }
         }
     };
 
+    // HERE HERE HERE HERE HERE HERE
 
-    // takes care of animating the game
-    private Timeline timeline = new Timeline();
-    // Whether the game is running or not
-    private boolean running = true;
+    private Parent createContent(){
+        Pane root = new Pane();
+        root.setPrefSize(APP_WIDTH, APP_HEIGHT);
+
+        player1.setTranslateX(0);
+        player1.setTranslateY(APP_HEIGHT / 2);
+        player1.setFill(Color.BLUE);
+
+        player2.setTranslateX(APP_WIDTH-BAT_W);
+        player2.setTranslateY(APP_HEIGHT / 2);
+        player2.setFill(Color.RED);
+
+        // runs every 0.016 or roughly 60fps
+        KeyFrame frame = new KeyFrame(Duration.seconds(0.016), event -> {
+            if (!running){
+                return;
+            }
+
+            switch(action){
+                case GO_UP:
+                    if(player1.getTranslateY() - 5 >= 0)
+                        player1.setTranslateY(player1.getTranslateY() - 5);
+                    break;
+                case GO_DOWN:
+                    if(player1.getTranslateY() + BAT_H + 5 <= APP_HEIGHT)
+                        player1.setTranslateY(player1.getTranslateY() + 5);
+                    break;
+                case NONE:
+                    break;
+            }
+
+
+                // player 1 collision detection
+            if (BouncyBall.checkCollision(ball1,player1)){
+                ball1.goesLeft = false;
+            }
+
+            if (BouncyBall.checkCollision(ball2, player1)){
+                ball2.goesLeft = false;
+            }
+
+            // player 2 collision detection
+            if (BouncyBall.checkCollision(ball1,player2)){
+                ball1.goesLeft = true;
+            }
+
+            if (BouncyBall.checkCollision(ball2, player2)){
+                ball2.goesLeft = true;
+            }
+        });
+
+        timeline.getKeyFrames().add(frame);
+        timeline.setCycleCount(Timeline.INDEFINITE);
+
+        root.getChildren().addAll(ball1, ball2, sealing, floor, left, right, player1, player2);
+        return root;
+    }
 
 
     private void startGame(){
 
-        //private BouncyBall ball1 = new BouncyBall(10, Color.RED, true, true);
-        //private BouncyBall ball2 = new BouncyBall(10, Color.GREEN, false, true);
-        ball1.setFill(Color.BLUE);
         ball1.setTranslateX(100);
         ball1.setTranslateY(APP_HEIGHT / 2);
         ball1.goesUp = true;
@@ -169,6 +242,9 @@ public class BouncyBallsWindow extends Application {
         right.setHeight(APP_HEIGHT);
         right.setFill(Color.BLACK);
 
+
+        timeline.play();
+        running = true;
         t1.start();
         t2.start();
     }
@@ -176,10 +252,36 @@ public class BouncyBallsWindow extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Pane root = new Pane();
+
+       /* Pane root = new Pane();
         root.setPrefSize(APP_WIDTH, APP_HEIGHT);
-        root.getChildren().addAll(ball1, ball2, sealing, floor, left, right);
-        Scene scene = new Scene(root);
+        root.getChildren().addAll(ball1, ball2, sealing, floor, left, right);*/
+        Scene scene = new Scene(createContent());
+
+        // What happens when keys are pressed for player1
+        scene.setOnKeyPressed(event ->{
+            switch (event.getCode()){
+                case W:
+                    action = UserAction.GO_UP;
+                    break;
+                case S:
+                    action = UserAction.GO_DOWN;
+                    break;
+            }
+        });
+        // What happens when keys are released
+        scene.setOnKeyReleased(event ->{
+            switch (event.getCode()){
+                case W:
+                    action = UserAction.NONE;
+                    break;
+                case S:
+                    action = UserAction.NONE;
+                    break;
+            }
+        });
+
+
         stage.setTitle("Bouncing Balls");
         stage.setScene(scene);
         stage.show();

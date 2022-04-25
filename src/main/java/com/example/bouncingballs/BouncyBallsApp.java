@@ -16,8 +16,8 @@ public class BouncyBallsApp extends Application {
     private static final int APP_WIDTH = 800;
     private static final int APP_HEIGHT = 600;
 
-    private BouncyBall ball1 = new BouncyBall(10, Color.RED, true, true);
-    private BouncyBall ball2 = new BouncyBall(10, Color.GREEN, false, true);
+    private BouncyBall ball1 = new BouncyBall(10, Color.RED, true, true, 5);
+    private BouncyBall ball2 = new BouncyBall(10, Color.GREEN, false, true, 5);
 
     Thread t1 = new Thread(ball1) {
         @Override
