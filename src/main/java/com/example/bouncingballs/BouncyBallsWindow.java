@@ -285,6 +285,10 @@ public class BouncyBallsWindow extends Application {
                 ball2.goesLeft = false;
             }
 
+            if (BouncyBall.checkCollision(ball3, player1)){
+                ball3.goesLeft = false;
+            }
+
             // player 2 collision detection
             if (BouncyBall.checkCollision(ball1,player2)){
                 ball1.goesLeft = true;
@@ -292,6 +296,10 @@ public class BouncyBallsWindow extends Application {
 
             if (BouncyBall.checkCollision(ball2, player2)){
                 ball2.goesLeft = true;
+            }
+
+            if (BouncyBall.checkCollision(ball3, player2)){
+                ball2.goesLeft = false;
             }
         });
 
