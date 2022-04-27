@@ -299,7 +299,7 @@ public class BouncyBallsWindow extends Application {
             }
 
             if (BouncyBall.checkCollision(ball3, player2)){
-                ball3.goesLeft = false;
+                ball3.goesLeft = true;
             }
         });
 
@@ -333,7 +333,7 @@ public class BouncyBallsWindow extends Application {
         ball2.goesLeft = false;
 
         ball3.setTranslateX(100);
-        ball3.setTranslateY(APP_HEIGHT / 2);
+        ball3.setTranslateY(APP_HEIGHT / 4);
         ball3.goesUp = false;
         ball3.goesLeft = false;
 
