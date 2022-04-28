@@ -5,6 +5,7 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -23,11 +24,8 @@ public class BouncyBallsWindow extends Application {
     }
 
 
-
     private UserAction action = UserAction.NONE;
     private UserAction2 action2 = UserAction2.NONE;
-
-
 
 
     // takes care of animating the game
@@ -41,10 +39,9 @@ public class BouncyBallsWindow extends Application {
     private static final int BAT_W = 20;
     private static final int BAT_H = 100;
 
-    private BouncyBall ball1 = new BouncyBall(20, Color.RED, true, true, 5);
-    private BouncyBall ball2 = new BouncyBall(20, Color.BLUE, true, true, 5);
-    // Comment only on branch "Ball3"
-    private BouncyBall ball3 = new BouncyBall(20, Color.GREEN, true, true, 5);
+    private BouncyBall ball1 = new BouncyBall(20, Color.RED, true, true, 4);
+    private BouncyBall ball2 = new BouncyBall(20, Color.BLUE, true, true, 4);
+    private BouncyBall ball3 = new BouncyBall(20, Color.GREEN, true, true, 4);
 
     private Rectangle sealing = new Rectangle();
     private Rectangle floor = new Rectangle();
@@ -52,6 +49,9 @@ public class BouncyBallsWindow extends Application {
     private Rectangle right = new Rectangle();
     private Rectangle player1 = new Rectangle(BAT_W, BAT_H);
     private Rectangle player2 = new Rectangle(BAT_W, BAT_H);
+
+    private TextField scorePlayer1 = new TextField();
+    private TextField scorePlayer2 = new TextField();
 
 
     Thread t1 = new Thread(ball1) {
@@ -61,7 +61,7 @@ public class BouncyBallsWindow extends Application {
             while(true){
 
                 try {
-                    Thread.sleep(40);
+                    Thread.sleep(16);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -130,7 +130,7 @@ public class BouncyBallsWindow extends Application {
             while(true) {
 
                     try {
-                        Thread.sleep(40);
+                        Thread.sleep(16);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -177,14 +177,14 @@ public class BouncyBallsWindow extends Application {
         }
     };
 
-    Thread t3 = new Thread(ball2) {
+    Thread t3 = new Thread(ball3) {
         @Override
         public void run(){
 
             while(true) {
 
                 try {
-                    Thread.sleep(40);
+                    Thread.sleep(16);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -223,6 +223,7 @@ public class BouncyBallsWindow extends Application {
 
     private Parent createContent(){
         Pane root = new Pane();
+
         root.setPrefSize(APP_WIDTH, APP_HEIGHT);
 
         player1.setTranslateX(0);
@@ -232,6 +233,10 @@ public class BouncyBallsWindow extends Application {
         player2.setTranslateX(APP_WIDTH-BAT_W);
         player2.setTranslateY(APP_HEIGHT / 2);
         player2.setFill(Color.RED);
+
+        t1.start();
+        t2.start();
+        t3.start();
 
         // runs every 0.016 or roughly 60fps
         KeyFrame frame = new KeyFrame(Duration.seconds(0.016), event -> {
@@ -264,16 +269,6 @@ public class BouncyBallsWindow extends Application {
                 case NONE:
                     break;
             }
-
-
-
-
-            //simple computer opponent who is following the closest ball
-
-
-//            Check nearestBall.getTranslateX
-//                    nearestBall.getTranslateY
-//                            Make computer increment in direction of participated hit point each frame
 
 
             // player 1 collision detection
@@ -365,9 +360,7 @@ public class BouncyBallsWindow extends Application {
 
         timeline.play();
         running = true;
-        t1.start();
-        t2.start();
-        t3.start();
+
     }
 
 
@@ -418,6 +411,7 @@ public class BouncyBallsWindow extends Application {
 
 
         stage.setTitle("Bouncing Balls");
+        //scene.setFill(Color.BLUE);
         stage.setScene(scene);
         stage.show();
         startGame();
