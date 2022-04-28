@@ -5,8 +5,10 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -15,11 +17,11 @@ import javafx.util.Duration;
 
 public class BouncyBallsWindow extends Application {
 
-    private enum UserAction{
+    private enum UserAction {
         NONE, GO_UP, GO_DOWN
     }
 
-    private enum UserAction2{
+    private enum UserAction2 {
         NONE, GO_UP, GO_DOWN
     }
 
@@ -39,6 +41,10 @@ public class BouncyBallsWindow extends Application {
     private static final int BAT_W = 20;
     private static final int BAT_H = 100;
 
+    private Label label1 = new Label("Ball 1");
+    private Label label2 = new Label("Ball 2");
+    private Label label3 = new Label("Ball 3");
+
     private BouncyBall ball1 = new BouncyBall(20, Color.RED, true, true, 4);
     private BouncyBall ball2 = new BouncyBall(20, Color.BLUE, true, true, 4);
     private BouncyBall ball3 = new BouncyBall(20, Color.GREEN, true, true, 4);
@@ -56,16 +62,16 @@ public class BouncyBallsWindow extends Application {
 
     Thread t1 = new Thread(ball1) {
         @Override
-        public void run(){
+        public void run() {
 
-            while(true){
+            while (true) {
 
                 try {
                     Thread.sleep(16);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
+                textFollow(label1, ball1);
                 System.out.println("Thread 1 Working");
                 // if the left boolean is true then add -5 to the x coordinate of the ball, else add 5
                 ball1.setTranslateX(ball1.getTranslateX() + (ball1.goesLeft ? -ball1.speed : ball1.speed));
@@ -74,27 +80,27 @@ public class BouncyBallsWindow extends Application {
 
 
                 // collision with sealing
-                if (BouncyBall.checkCollision(ball1,sealing)){
+                if (BouncyBall.checkCollision(ball1, sealing)) {
                     ball1.goesUp = false;
                 }
 
                 // collision with floor
-                if (BouncyBall.checkCollision(ball1,floor)){
+                if (BouncyBall.checkCollision(ball1, floor)) {
                     ball1.goesUp = true;
                 }
 
                 // collision with left
-                if (BouncyBall.checkCollision(ball1, left)){
+                if (BouncyBall.checkCollision(ball1, left)) {
                     ball1.goesLeft = false;
                 }
 
                 // collision with right
-                if (BouncyBall.checkCollision(ball1, right)){
+                if (BouncyBall.checkCollision(ball1, right)) {
                     ball1.goesLeft = true;
                 }
 
                 // Ball on ball collision
-                if (BouncyBall.checkCollision(ball1,ball2)){
+                if (BouncyBall.checkCollision(ball1, ball2)) {
                     ball1.setFill(BouncyBall.changeColor());
                     ball2.setFill(BouncyBall.changeColor());
 
@@ -106,7 +112,7 @@ public class BouncyBallsWindow extends Application {
                     System.out.println("BALLS TOUCHED EACH OTHER");
                 }
 
-                if (BouncyBall.checkCollision(ball1,ball3)){
+                if (BouncyBall.checkCollision(ball1, ball3)) {
                     ball1.setFill(BouncyBall.changeColor());
                     ball3.setFill(BouncyBall.changeColor());
 
@@ -125,15 +131,17 @@ public class BouncyBallsWindow extends Application {
 
     Thread t2 = new Thread(ball2) {
         @Override
-        public void run(){
+        public void run() {
 
-            while(true) {
+            while (true) {
 
-                    try {
-                        Thread.sleep(16);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    Thread.sleep(16);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                textFollow(label2, ball2);
 
                 System.out.println("Thread 2 Working");
                 // if the left boolean is true then add -5 to the x coordinate of the ball, else add 5
@@ -143,26 +151,26 @@ public class BouncyBallsWindow extends Application {
 
 
                 // collision with sealing
-                if (BouncyBall.checkCollision(ball2,sealing)){
+                if (BouncyBall.checkCollision(ball2, sealing)) {
                     ball2.goesUp = false;
                 }
 
                 // collision with floor
-                if (BouncyBall.checkCollision(ball2,floor)){
+                if (BouncyBall.checkCollision(ball2, floor)) {
                     ball2.goesUp = true;
                 }
 
                 // collision with left
-                if (BouncyBall.checkCollision(ball2, left)){
+                if (BouncyBall.checkCollision(ball2, left)) {
                     ball2.goesLeft = false;
                 }
 
                 // collision with right
-                if (BouncyBall.checkCollision(ball2, right)){
+                if (BouncyBall.checkCollision(ball2, right)) {
                     ball2.goesLeft = true;
                 }
 
-                if (BouncyBall.checkCollision(ball2,ball3)){
+                if (BouncyBall.checkCollision(ball2, ball3)) {
                     ball2.setFill(BouncyBall.changeColor());
                     ball3.setFill(BouncyBall.changeColor());
 
@@ -179,16 +187,17 @@ public class BouncyBallsWindow extends Application {
 
     Thread t3 = new Thread(ball3) {
         @Override
-        public void run(){
+        public void run() {
 
-            while(true) {
+            while (true) {
 
                 try {
                     Thread.sleep(16);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
+                // sets the label to follow the balls
+                textFollow(label3, ball3);
                 System.out.println("Thread 3 Working");
                 // if the left boolean is true then add -5 to the x coordinate of the ball, else add 5
                 ball3.setTranslateX(ball3.getTranslateX() + (ball3.goesLeft ? -ball3.speed : ball3.speed));
@@ -197,22 +206,22 @@ public class BouncyBallsWindow extends Application {
 
 
                 // collision with sealing
-                if (BouncyBall.checkCollision(ball3,sealing)){
+                if (BouncyBall.checkCollision(ball3, sealing)) {
                     ball3.goesUp = false;
                 }
 
                 // collision with floor
-                if (BouncyBall.checkCollision(ball3,floor)){
+                if (BouncyBall.checkCollision(ball3, floor)) {
                     ball3.goesUp = true;
                 }
 
                 // collision with left
-                if (BouncyBall.checkCollision(ball3, left)){
+                if (BouncyBall.checkCollision(ball3, left)) {
                     ball3.goesLeft = false;
                 }
 
                 // collision with right
-                if (BouncyBall.checkCollision(ball3, right)){
+                if (BouncyBall.checkCollision(ball3, right)) {
                     ball3.goesLeft = true;
                 }
             }
@@ -221,7 +230,7 @@ public class BouncyBallsWindow extends Application {
 
     // HERE HERE HERE HERE HERE HERE
 
-    private Parent createContent(){
+    private Parent createContent() {
         Pane root = new Pane();
 
         root.setPrefSize(APP_WIDTH, APP_HEIGHT);
@@ -230,7 +239,7 @@ public class BouncyBallsWindow extends Application {
         player1.setTranslateY(APP_HEIGHT / 2);
         player1.setFill(Color.BLUE);
 
-        player2.setTranslateX(APP_WIDTH-BAT_W);
+        player2.setTranslateX(APP_WIDTH - BAT_W);
         player2.setTranslateY(APP_HEIGHT / 2);
         player2.setFill(Color.RED);
 
@@ -240,30 +249,30 @@ public class BouncyBallsWindow extends Application {
 
         // runs every 0.016 or roughly 60fps
         KeyFrame frame = new KeyFrame(Duration.seconds(0.016), event -> {
-            if (!running){
+            if (!running) {
                 return;
             }
 
-            switch(action){
+            switch (action) {
                 case GO_UP:
-                    if(player1.getTranslateY() - 5 >= 0)
+                    if (player1.getTranslateY() - 5 >= 0)
                         player1.setTranslateY(player1.getTranslateY() - 5);
                     break;
                 case GO_DOWN:
-                    if(player1.getTranslateY() + BAT_H + 5 <= APP_HEIGHT)
+                    if (player1.getTranslateY() + BAT_H + 5 <= APP_HEIGHT)
                         player1.setTranslateY(player1.getTranslateY() + 5);
                     break;
                 case NONE:
                     break;
             }
 
-            switch(action2){
+            switch (action2) {
                 case GO_UP:
-                    if(player2.getTranslateY() - 5 >= 0)
+                    if (player2.getTranslateY() - 5 >= 0)
                         player2.setTranslateY(player2.getTranslateY() - 5);
                     break;
                 case GO_DOWN:
-                    if(player2.getTranslateY() + BAT_H + 5 <= APP_HEIGHT)
+                    if (player2.getTranslateY() + BAT_H + 5 <= APP_HEIGHT)
                         player2.setTranslateY(player2.getTranslateY() + 5);
                     break;
                 case NONE:
@@ -272,28 +281,28 @@ public class BouncyBallsWindow extends Application {
 
 
             // player 1 collision detection
-            if (BouncyBall.checkCollision(ball1,player1)){
+            if (BouncyBall.checkCollision(ball1, player1)) {
                 ball1.goesLeft = false;
             }
 
-            if (BouncyBall.checkCollision(ball2, player1)){
+            if (BouncyBall.checkCollision(ball2, player1)) {
                 ball2.goesLeft = false;
             }
 
-            if (BouncyBall.checkCollision(ball3, player1)){
+            if (BouncyBall.checkCollision(ball3, player1)) {
                 ball3.goesLeft = false;
             }
 
             // player 2 collision detection
-            if (BouncyBall.checkCollision(ball1,player2)){
+            if (BouncyBall.checkCollision(ball1, player2)) {
                 ball1.goesLeft = true;
             }
 
-            if (BouncyBall.checkCollision(ball2, player2)){
+            if (BouncyBall.checkCollision(ball2, player2)) {
                 ball2.goesLeft = true;
             }
 
-            if (BouncyBall.checkCollision(ball3, player2)){
+            if (BouncyBall.checkCollision(ball3, player2)) {
                 ball3.goesLeft = true;
             }
         });
@@ -301,26 +310,32 @@ public class BouncyBallsWindow extends Application {
         timeline.getKeyFrames().add(frame);
         timeline.setCycleCount(Timeline.INDEFINITE);
 
-        root.getChildren().addAll(ball1, ball2, ball3, sealing, floor, left, right, player1, player2);
+        root.getChildren().addAll(ball1, ball2, ball3, sealing, floor, left, right, player1, player2, label1, label2, label3);
         return root;
     }
 
-    private static BouncyBall closestBall(BouncyBall ball1, BouncyBall ball2){
-        if (ball1.getTranslateX() >= ball2.getTranslateX()){
+    private static BouncyBall closestBall(BouncyBall ball1, BouncyBall ball2) {
+        if (ball1.getTranslateX() >= ball2.getTranslateX()) {
             return ball1;
-        } else{
+        } else {
             return ball2;
         }
     }
 
+    // sets label to follow ball
+    private void textFollow(Label label, BouncyBall ball) {
+        double ty = ball.getTranslateY();
+        double tx = ball.getTranslateX();
+        label.setTranslateY(ty);
+        label.setTranslateX(tx);
+    }
 
-    private void startGame(){
+    private void startGame() {
 
         ball1.setTranslateX(300);
         ball1.setTranslateY(APP_HEIGHT / 2);
         ball1.goesUp = true;
         ball1.goesLeft = true;
-
 
         ball2.setTranslateX(600);
         ball2.setTranslateY(APP_HEIGHT / 2);
@@ -340,7 +355,7 @@ public class BouncyBallsWindow extends Application {
         sealing.setFill(Color.BLACK);
 
         floor.setTranslateX(0);
-        floor.setTranslateY(APP_HEIGHT-5);
+        floor.setTranslateY(APP_HEIGHT - 5);
         floor.setWidth(APP_WIDTH);
         floor.setHeight(5);
         floor.setFill(Color.BLACK);
@@ -351,7 +366,7 @@ public class BouncyBallsWindow extends Application {
         left.setHeight(APP_HEIGHT);
         left.setFill(Color.BLACK);
 
-        right.setTranslateX(APP_WIDTH-5);
+        right.setTranslateX(APP_WIDTH - 5);
         right.setTranslateY(0);
         right.setWidth(5);
         right.setHeight(APP_HEIGHT);
@@ -370,8 +385,8 @@ public class BouncyBallsWindow extends Application {
         Scene scene = new Scene(createContent());
 
         // What happens when keys are pressed for players
-        scene.setOnKeyPressed(event ->{
-            switch (event.getCode()){
+        scene.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
                 case W:
                     action = UserAction.GO_UP;
                     break;
@@ -380,7 +395,7 @@ public class BouncyBallsWindow extends Application {
                     break;
             }
 
-            switch (event.getCode()){
+            switch (event.getCode()) {
                 case UP:
                     action2 = UserAction2.GO_UP;
                     break;
@@ -390,8 +405,8 @@ public class BouncyBallsWindow extends Application {
             }
         });
         // What happens when keys are released for players
-        scene.setOnKeyReleased(event ->{
-            switch (event.getCode()){
+        scene.setOnKeyReleased(event -> {
+            switch (event.getCode()) {
                 case W:
                     action = UserAction.NONE;
                     break;
@@ -399,7 +414,7 @@ public class BouncyBallsWindow extends Application {
                     action = UserAction.NONE;
                     break;
             }
-            switch (event.getCode()){
+            switch (event.getCode()) {
                 case UP:
                     action2 = UserAction2.NONE;
                     break;
@@ -409,7 +424,6 @@ public class BouncyBallsWindow extends Application {
             }
         });
 
-
         stage.setTitle("Bouncing Balls");
         //scene.setFill(Color.BLUE);
         stage.setScene(scene);
@@ -417,7 +431,8 @@ public class BouncyBallsWindow extends Application {
         startGame();
 
     }
-    public static void main(String[] args){
+
+    public static void main(String[] args) {
         launch(args);
     }
 }
