@@ -39,6 +39,10 @@ public class BouncyBallsWindow extends Application {
     private static final int BAT_W = 20;
     private static final int BAT_H = 100;
 
+    private Label lbl1 = new Label("Ball 1");
+    private Label lbl2 = new Label("Ball 2");
+    private Label lbl3 = new Label("Ball 3");
+
     private BouncyBall ball1 = new BouncyBall(20, Color.RED, true, true, 4);
     private BouncyBall ball2 = new BouncyBall(20, Color.BLUE, true, true, 4);
     private BouncyBall ball3 = new BouncyBall(20, Color.GREEN, true, true, 4);
@@ -55,7 +59,13 @@ public class BouncyBallsWindow extends Application {
 
     private Label scoreLabel = new Label("PLAYER ONE SCORE: " + scorePlayer1 + "\t\tPLAYER TWO SCORE: " + scorePlayer2);
 
+    private void follow(Label label, BouncyBall ball) {
 
+            double tx = ball.getTranslateX();
+            double ty = ball.getTranslateY();
+            label.setTranslateX(tx);
+            label.setTranslateY(ty);
+    }
 
 
 
@@ -71,7 +81,7 @@ public class BouncyBallsWindow extends Application {
                     e.printStackTrace();
                 }
 
-
+                follow(lbl1, ball1);
                 //System.out.println("Thread 1 Working");
                 // if the left boolean is true then add -5 to the x coordinate of the ball, else add 5
                 ball1.setTranslateX(ball1.getTranslateX() + (ball1.goesLeft ? -ball1.speed : ball1.speed));
@@ -143,6 +153,8 @@ public class BouncyBallsWindow extends Application {
                         e.printStackTrace();
                     }
 
+                    follow(lbl2, ball2);
+
                 System.out.println("Thread 2 Working");
                 // if the left boolean is true then add -5 to the x coordinate of the ball, else add 5
                 ball2.setTranslateX(ball2.getTranslateX() + (ball2.goesLeft ? -ball2.speed : ball2.speed));
@@ -199,6 +211,7 @@ public class BouncyBallsWindow extends Application {
                     e.printStackTrace();
                 }
 
+                follow(lbl3, ball3);
                 System.out.println("Thread 3 Working");
                 // if the left boolean is true then add -5 to the x coordinate of the ball, else add 5
                 ball3.setTranslateX(ball3.getTranslateX() + (ball3.goesLeft ? -ball3.speed : ball3.speed));
@@ -315,7 +328,7 @@ public class BouncyBallsWindow extends Application {
         timeline.getKeyFrames().add(frame);
         timeline.setCycleCount(Timeline.INDEFINITE);
 
-        root.getChildren().addAll(ball1, ball2, ball3, sealing, floor, left, right, player1, player2, scoreLabel);
+        root.getChildren().addAll(ball1, ball2, ball3, sealing, floor, left, right, player1, player2, scoreLabel, lbl1, lbl2, lbl3);
         return root;
     }
 
@@ -342,16 +355,19 @@ public class BouncyBallsWindow extends Application {
         ball1.setTranslateY(APP_HEIGHT / 2);
         ball1.goesUp = true;
         ball1.goesLeft = true;
+        follow(lbl1, ball1);
 
         ball2.setTranslateX(600);
         ball2.setTranslateY(APP_HEIGHT / 2);
         ball2.goesUp = true;
         ball2.goesLeft = false;
+        follow(lbl2, ball2);
 
         ball3.setTranslateX(100);
         ball3.setTranslateY(APP_HEIGHT / 4);
         ball3.goesUp = false;
         ball3.goesLeft = false;
+        follow(lbl3, ball3);
 
 
         sealing.setTranslateX(0);
