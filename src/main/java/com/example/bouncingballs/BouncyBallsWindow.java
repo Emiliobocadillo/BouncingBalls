@@ -5,7 +5,7 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -50,8 +50,13 @@ public class BouncyBallsWindow extends Application {
     private Rectangle player1 = new Rectangle(BAT_W, BAT_H);
     private Rectangle player2 = new Rectangle(BAT_W, BAT_H);
 
-    private TextField scorePlayer1 = new TextField();
-    private TextField scorePlayer2 = new TextField();
+    private int scorePlayer1 = 0;
+    private int scorePlayer2 = 0;
+
+    private Label scoreLabel = new Label("PLAYER ONE SCORE: " + scorePlayer1 + "\t\tPLAYER TWO SCORE: " + scorePlayer2);
+
+
+
 
 
     Thread t1 = new Thread(ball1) {
@@ -66,7 +71,8 @@ public class BouncyBallsWindow extends Application {
                     e.printStackTrace();
                 }
 
-                System.out.println("Thread 1 Working");
+
+                //System.out.println("Thread 1 Working");
                 // if the left boolean is true then add -5 to the x coordinate of the ball, else add 5
                 ball1.setTranslateX(ball1.getTranslateX() + (ball1.goesLeft ? -ball1.speed : ball1.speed));
                 // if the up boolean is true then add -5 to the y coordinate of the ball, else add 5
@@ -85,11 +91,13 @@ public class BouncyBallsWindow extends Application {
 
                 // collision with left
                 if (BouncyBall.checkCollision(ball1, left)){
+                    scorePlayer2+=1;
                     ball1.goesLeft = false;
                 }
 
                 // collision with right
                 if (BouncyBall.checkCollision(ball1, right)){
+                    scorePlayer1+=1;
                     ball1.goesLeft = true;
                 }
 
@@ -154,11 +162,13 @@ public class BouncyBallsWindow extends Application {
 
                 // collision with left
                 if (BouncyBall.checkCollision(ball2, left)){
+                    scorePlayer2+=1;
                     ball2.goesLeft = false;
                 }
 
                 // collision with right
                 if (BouncyBall.checkCollision(ball2, right)){
+                    scorePlayer1+=1;
                     ball2.goesLeft = true;
                 }
 
@@ -208,11 +218,13 @@ public class BouncyBallsWindow extends Application {
 
                 // collision with left
                 if (BouncyBall.checkCollision(ball3, left)){
+                    scorePlayer2+=1;
                     ball3.goesLeft = false;
                 }
 
                 // collision with right
                 if (BouncyBall.checkCollision(ball3, right)){
+                    scorePlayer1+=1;
                     ball3.goesLeft = true;
                 }
             }
@@ -234,9 +246,7 @@ public class BouncyBallsWindow extends Application {
         player2.setTranslateY(APP_HEIGHT / 2);
         player2.setFill(Color.RED);
 
-        t1.start();
-        t2.start();
-        t3.start();
+
 
         // runs every 0.016 or roughly 60fps
         KeyFrame frame = new KeyFrame(Duration.seconds(0.016), event -> {
@@ -270,6 +280,10 @@ public class BouncyBallsWindow extends Application {
                     break;
             }
 
+            scoreLabel.setText("PLAYER ONE SCORE: " + scorePlayer1 + "\t\tPLAYER TWO SCORE: " + scorePlayer2);
+            stopGame();
+
+
 
             // player 1 collision detection
             if (BouncyBall.checkCollision(ball1,player1)){
@@ -301,10 +315,18 @@ public class BouncyBallsWindow extends Application {
         timeline.getKeyFrames().add(frame);
         timeline.setCycleCount(Timeline.INDEFINITE);
 
-        root.getChildren().addAll(ball1, ball2, ball3, sealing, floor, left, right, player1, player2);
+        root.getChildren().addAll(ball1, ball2, ball3, sealing, floor, left, right, player1, player2, scoreLabel);
         return root;
     }
 
+
+    private void stopGame(){
+        if (scorePlayer1 >= 3 || scorePlayer2 >= 3){
+            timeline.stop();
+            running = false;
+
+        }
+    }
     private static BouncyBall closestBall(BouncyBall ball1, BouncyBall ball2){
         if (ball1.getTranslateX() >= ball2.getTranslateX()){
             return ball1;
@@ -320,7 +342,6 @@ public class BouncyBallsWindow extends Application {
         ball1.setTranslateY(APP_HEIGHT / 2);
         ball1.goesUp = true;
         ball1.goesLeft = true;
-
 
         ball2.setTranslateX(600);
         ball2.setTranslateY(APP_HEIGHT / 2);
@@ -357,9 +378,19 @@ public class BouncyBallsWindow extends Application {
         right.setHeight(APP_HEIGHT);
         right.setFill(Color.BLACK);
 
+        scoreLabel.setTranslateX(270);
+        scoreLabel.setTranslateY(100);
+
+
+
 
         timeline.play();
         running = true;
+
+
+        t1.start();
+        t2.start();
+        t3.start();
 
     }
 
